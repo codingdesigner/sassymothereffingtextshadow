@@ -1,0 +1,22 @@
+@import "compass";
+@import "common/variables/color_names";
+@import "style/variables/colors";
+/*@import "style/variables/fonts";*/
+
+@function wtf() {
+  $output: '';
+  $color: rgba($red, 0.5);
+  $end: 25;
+  @for $i from 1 through $end {
+     $output: $output + '#{$color} #{$i}px #{$i}px 2px';
+     @if $i < $end {
+       $output: $output + ', ';
+     }
+  }
+  @return unquote($output);
+}
+
+.ex1 h3 {
+  @include text-shadow(wtf());
+}
+  

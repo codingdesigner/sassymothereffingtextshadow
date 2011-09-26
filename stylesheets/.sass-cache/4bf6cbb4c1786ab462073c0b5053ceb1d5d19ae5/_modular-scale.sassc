@@ -1,0 +1,1488 @@
+3.1.7 (Brainy Betty)
+718e0e57da02b9d278b0f4f05c9a564b16b5135e
+o:Sass::Tree::RootNode	:@template"ê+// Based on: https://github.com/scottkellum/modular-scale
+
+// Ratios
+$golden: 1.618 
+$octave: (2 / 1)
+$major-seventh: (15 / 8)
+$minor-seventh: (16 / 9)
+$major-sixth: (5 / 3)
+$minor-sixth: (8 / 5)
+$fifth: (3 / 2)
+$fourth: (4 / 3)
+$major-third: (5 / 4)
+$minor-third: (6 / 5)
+$major-second: (9 / 8)
+$minor-second: (16 / 15)
+
+// Defaults
+$ratio: $golden !default
+$base-size: 12px !default
+$property: font-size !default
+$class-slug: ms !default
+
+// Modular Scale function
+@function modular-scale($multiple, $base-size, $ratio)
+  // return the $base-size if $multiple is zero
+  @if $multiple == 0
+    @if type-of($base-size) == 'list'
+      $base-size: sort-list($base-size)
+      @return nth($base-size, 1)
+    // return just the simple $base-size value if it's not a list
+    @return $base-size
+
+  // if multiple base-sizes are passed in as a list
+  // and multiple ratios are passed in as a list
+  // calculate values in using each base-size / ratio combination
+  @if type-of($base-size) == 'list' and type-of($ratio) == 'list'
+    @return ms-multibase-multiratio($multiple, $base-size, $ratio)
+    
+  // if multiple base-sizes are passed in as a list
+  // calculate values in using each base-size
+  @if type-of($base-size) == 'list' and type-of($ratio) == 'number'
+    @return ms-multibase($multiple, $base-size, $ratio)
+      
+  // if multiple ratios are passed in as a list
+  // calculate values in using each ratio
+  @if type-of($base-size) == 'number' and type-of($ratio) == 'list'
+    @return ms-multiratio($multiple, $base-size, $ratio)
+    
+  // If there are no lists just run the simple function
+  @return exponent($ratio, $multiple) * $base-size
+  
+  
+// calculate values in using each base-size / ratio combination
+@function ms-multibase-multiratio($multiple, $base-size, $ratio)
+  // start with an empty list to place all values in
+  $scale-values: ()
+  // make sure base sizes are in ascending order
+  $base-size: sort-list($base-size)
+  // take each base-size in turn
+  $k: 1
+  @while $k <= length($base-size)
+    // add each $base-size to the list except the first
+    @if $k > 1
+      $scale-values: append($scale-values, nth($base-size, $k))
+    // take each ratio in turn
+    $j: 1
+    @while $j <= length($ratio)
+      // reset $modular-scale for each set
+      $modular-scale: nth($base-size, $k)
+      // do the scale for each base-size using this ratio 
+      @if $multiple > 0
+        // up $multiple times
+        // and add the result to $scale-values        
+        @for $i from 1 through $multiple
+          $modular-scale: exponent(nth($ratio, $j), $i) * nth($base-size, $k)
+          $scale-values: append($scale-values, $modular-scale)
+        // and down until the value is lower than the lowest $base-size
+        // and add the result to $scale-values
+        $i: -1
+        $modular-scale: nth($base-size, $k)
+        @while $modular-scale >= nth($base-size, 1)
+          $modular-scale: exponent(nth($ratio, $j), $i) * nth($base-size, $k)
+          $scale-values: append($scale-values, $modular-scale)
+          $i: $i - 1
+      @if $multiple < 0
+        // do the scale down for each set to below 1px
+        $i: -1
+        $modular-scale: nth($base-size, $k)
+        @while $modular-scale > 1
+          $modular-scale: exponent(nth($ratio, $j), $i) * nth($base-size, $k)
+          $scale-values: append($scale-values, $modular-scale)
+          $i: $i - 1
+      $j: $j + 1
+    $k: $k + 1
+  // return trimmed and sorted final list
+  @return trim-sort($multiple, $scale-values, $base-size)
+    
+    
+// calculate values in using each base-size
+@function ms-multibase($multiple, $base-size, $ratio)
+  // start with an empty list to place all values in
+  $scale-values: ()
+  // make sure base sizes are in ascending order
+  $base-size: sort-list($base-size)
+  // take each base-size in turn
+  $k: 1
+  @while $k <= length($base-size)
+    // add each $base-size to the list except the first
+    @if $k > 1
+      $scale-values: append($scale-values, nth($base-size, $k))
+    // reset $modular-scale for each set
+    $modular-scale: nth($base-size, $k)
+    // do the scale for each base-size using this ratio 
+    @if $multiple > 0
+      // up $multiple times
+      // and add the result to $scale-values        
+      @for $i from 1 through $multiple
+        $modular-scale: exponent($ratio, $i) * nth($base-size, $k)
+        $scale-values: append($scale-values, $modular-scale)
+      // and down until the value is lower than the lowest $base-size
+      // and add the result to $scale-values
+      $i: -1
+      $modular-scale: nth($base-size, $k)
+      @while $modular-scale >= nth($base-size, 1)
+        $modular-scale: exponent($ratio, $i) * nth($base-size, $k)
+        $scale-values: append($scale-values, $modular-scale)
+        $i: $i - 1
+    @if $multiple < 0
+      // do the scale down for each set to below 1px
+      $i: -1
+      $modular-scale: nth($base-size, $k)
+      @while $modular-scale > 1
+        $modular-scale: exponent($ratio, $i) * nth($base-size, $k)
+        $scale-values: append($scale-values, $modular-scale)
+        $i: $i - 1
+    $k: $k + 1
+  // return trimmed and sorted final list
+  @return trim-sort($multiple, $scale-values, $base-size)
+
+    
+// calculate values in using each ratio
+@function ms-multiratio($multiple, $base-size, $ratio)
+  // start with an empty list to place all values in
+  $scale-values: ()
+  // If $multiple is a positive integer (up the scale)
+  @if $multiple > 0
+    // take each ratio in turn
+    $j: 1
+    @while $j <= length($ratio)
+      // reset $modular-scale for each set
+      $modular-scale: $base-size
+      // do the scale using this ratio thru the multiple, and add the result to $scale-values
+      @for $i from 1 through $multiple
+        $modular-scale: exponent(nth($ratio, $j), $i) * $base-size
+        $scale-values: append($scale-values, $modular-scale)
+      $j: $j + 1
+    // sort acsending      
+    $scale-values: sort-list($scale-values)
+    // return the final value using the laced list
+    @return nth($scale-values, $multiple)
+  // If $multiple is a negative integer (down the scale)
+  @if $multiple < 0
+    // take each ratio in turn
+    $j: 1
+    @while $j <= length($ratio)
+      // reset $modular-scale for each set
+      $modular-scale: $base-size
+      // do the scale using this ratio thru the multiple, and add the result to $scale-values
+      @for $i from 1 through ($multiple * -1)
+        $modular-scale: exponent(nth($ratio, $j), -$i) * $base-size
+        $scale-values: append($scale-values, $modular-scale)
+      $j: $j + 1
+    // sort decending
+    $scale-values: sort-list($scale-values, 'dec')
+    // return the final value using the laced list
+    @return nth($scale-values, $multiple * -1)
+    
+    
+// trim and sort the final list
+@function trim-sort($multiple, $scale-values, $base-size)
+  @if $multiple > 0
+    // trim list so we can count from the lowest $base-size
+    $scale-values: trim-list($scale-values, nth($base-size, 1))
+    // sort acsending      
+    $scale-values: sort-list($scale-values)
+    // return the final value using the laced list
+    @return nth($scale-values, $multiple)
+  @else
+    // trim list so we can count from the lowest $base-size
+    $scale-values: trim-list($scale-values, nth($base-size, 1), 'dec')
+    // sort acsending      
+    $scale-values: sort-list($scale-values, 'dec')
+    // return the final value using the laced list
+    @return nth($scale-values, -$multiple)
+  
+  
+/////////////////////////////////////////////////////////////////////////
+  
+// Shortcut
+@function ms($multiple, $base-size, $ratio)
+  // Return the value from the Modular Scale function
+  @return modular-scale($multiple, $base-size, $ratio)
+
+// Mixin
+// Deprecated. Use the modular-scale() function instead
+=modular-scale($property, $multiple, $base-size, $ratio)
+  // Print the $property and return the value from the Modular Scale function
+  @warn "The modular-scale mixin is deprecated. Instead use the function: width: modular-scale(3)" 
+  #{$property}: modular-scale($multiple, $base-size, $ratio)
+
+// Classes Mixin
+=modular-scale-classes($multiple, $property, $class-slug, $base-size, $ratio)
+  // Loop from 0 through the value of $multiple and generate a range of classes
+  @for $i from 0 through $multiple
+    .#{$class-slug}-#{$i}
+      // Print the $property and return the value from the Modular Scale function
+      #{$property}: modular-scale($i, $base-size, $ratio)
+      
+
+/////////////////////////////////////////////////////////////////////////
+
+
+// Sass exponent support
+@function exponent($base, $exponent)
+  // reset value
+  $value: $base
+  // positive intergers get multiplied
+  @if $exponent > 1
+    @for $i from 2 through $exponent
+      $value: $value * $base
+  // negitive intergers get divided. A number divided by itself is 1
+  @if $exponent < 1
+    @for $i from 0 through -$exponent
+      $value: $value / $base
+  // return the last value written
+  @return $value
+
+
+// Sass list sorting support
+@function sort-list($list, $dir: 'asc')
+  // built-in list sorting in Sass would make this go away.
+  // declare some empty lists to put our new order and temporary values 
+  $new-order: ()
+  $temp: ()
+  // fill $temp with the contents of $list
+  $temp: join($temp, $list)
+  // if sorting ascending
+  @if $dir == 'asc'
+    // loop through all values in $list
+    @for $i from 1 through length($list)
+      // impossibly high starter value to compare
+      $low: 1000000
+      // check for lowest value in $temp
+      @for $j from 1 through length($temp)
+        @if nth($temp, $j) < $low
+          $low: nth($temp, $j)
+      // add lowest value to $new-order
+      $new-order: append($new-order, $low)
+      // empty $temp for the next comparison
+      $temp: ()
+      // re-populate $temp with remaining values to sort
+      @for $k from 1 through length($list)
+        @if nth($list, $k) > $low
+          $temp: append($temp, nth($list, $k))
+  @if $dir == 'dec'
+    // loop through all values in $list
+    @for $i from 1 through length($list)
+      // 0 starter value
+      $high: 0
+      // check for highest value in $temp
+      @for $j from 1 through length($temp)
+        @if nth($temp, $j) > $high
+          $high: nth($temp, $j)
+      $new-order: append($new-order, $high)
+      // empty $temp for the next comparison
+      $temp: ()
+      // re-populate $temp with remaining values to sort
+      @for $k from 1 through length($list)
+        @if nth($list, $k) < $high
+          $temp: append($temp, nth($list, $k))
+  @return $new-order
+  
+  
+// Sass list trimming support
+@function trim-list($list, $start, $dir: 'asc')
+  // built-in list trimming in Sass would make this go away.
+  // declare some empty lists to put our trimmed values
+  $trimmed: ()
+  // if sorting ascending
+  @if $dir == 'asc'
+    // loop through all values in $list
+    @for $i from 1 through length($list)
+      @if nth($list, $i) >= $start
+        $trimmed: append($trimmed, nth($list, $i))
+  @if $dir == 'dec'
+    // loop through all values in $list
+    @for $i from 1 through length($list)
+      @if nth($list, $i) <= $start
+        $trimmed: append($trimmed, nth($list, $i))
+  @return $trimmed
+:@has_childrenT:@options{ :@children[0o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT;@:
+@linei:@value">// Based on: https://github.com/scottkellum/modular-scale:@lines[ ;	[ :
+@loud0o;
+;@
+;T;@;i;"// Ratios;[ ;	[ ;0o:Sass::Tree::VariableNode:
+@name"golden;@
+;@;i	:@guarded0:
+@expro:Sass::Script::Number:@original"
+1.618:@denominator_units[ :@numerator_units[ ;@;i	;f1.6180000000000001 Ÿ;	[ o;;"octave;@
+;@;i
+;0;o:Sass::Script::Operation
+:@operand1o;
+;@;[ ;@;i
+;i;@;i
+:@operator:div:@operand2o;;"1;@;[ ;@;i
+;i;	[ o;;"major-seventh;@
+;@;i;0;o;
+;o;
+;@;[ ;@;i;i;@;i;;;o;;"8;@;[ ;@;i;i;	[ o;;"minor-seventh;@
+;@;i;0;o;
+;o;
+;@;[ ;@;i;i;@;i;;;o;;"9;@;[ ;@;i;i;	[ o;;"major-sixth;@
+;@;i;0;o;
+;o;
+;@;[ ;@;i;i
+;@;i;;;o;;"3;@;[ ;@;i;i;	[ o;;"minor-sixth;@
+;@;i;0;o;
+;o;
+;@;[ ;@;i;i;@;i;;;o;;"5;@;[ ;@;i;i
+;	[ o;;"
+fifth;@
+;@;i;0;o;
+;o;
+;@;[ ;@;i;i;@;i;;;o;;"2;@;[ ;@;i;i;	[ o;;"fourth;@
+;@;i;0;o;
+;o;
+;@;[ ;@;i;i	;@;i;;;o;;"3;@;[ ;@;i;i;	[ o;;"major-third;@
+;@;i;0;o;
+;o;
+;@;[ ;@;i;i
+;@;i;;;o;;"4;@;[ ;@;i;i	;	[ o;;"minor-third;@
+;@;i;0;o;
+;o;
+;@;[ ;@;i;i;@;i;;;o;;"5;@;[ ;@;i;i
+;	[ o;;"major-second;@
+;@;i;0;o;
+;o;
+;@;[ ;@;i;i;@;i;;;o;;"8;@;[ ;@;i;i;	[ o;;"minor-second;@
+;@;i;0;o;
+;o;
+;@;[ ;@;i;i;@;i;;;o;;"15;@;[ ;@;i;i;	[ o;
+;@
+;T;@;i;"// Defaults;[ ;	[ ;0o;;"
+ratio;@
+;@;i;"!default;o:Sass::Script::Variable	;"golden;@;i:@underscored_name"golden;	[ o;;"base-size;@
+;@;i;"!default;o;;"	12px;[ ;["px;@;i;i;	[ o;;"property;@
+;@;i;"!default;o:Sass::Script::String	:
+@type:identifier;@;i;"font-size;	[ o;;"class-slug;@
+;@;i;"!default;o; 	;!;";@;i;"ms;	[ o;
+;@
+;T;@;i;"// Modular Scale function;[ ;	[ ;0o:Sass::Tree::FunctionNode;"modular-scale;T;@
+;@;i;	[o;
+;@
+;T;@;i;"2// return the $base-size if $multiple is zero;[ ;	[ ;0u:Sass::Tree::IfNodeK[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"multiple:@options{ :
+@linei:@underscored_name"multiple;	@	;
+i:@operator:eq:@operand2o:Sass::Script::Number:@original"0:@denominator_units[ :@numerator_units[ ;	@	;
+i:@valuei 0[u:Sass::Tree::IfNodeÁ[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Funcall
+:
+@name"type-of:@keywords{ :@options{ :
+@linei :
+@args[o:Sass::Script::Variable	;"base-size;
+@
+;i :@underscored_name"base_size;
+@
+;i :@operator:eq:@operand2o:Sass::Script::String	:
+@type:string;
+@
+;i :@value"	list0[o:Sass::Tree::VariableNode;"base-size:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;
+@
+;i!:@guarded0:
+@expro;
+;"sort-list;	{ ;
+@
+;i!;[o;	;"base-size;
+@
+;i!;"base_size:@children[ o:Sass::Tree::ReturnNode
+;@;
+@
+;i";o;
+;"nth;	{ ;
+@
+;i";[o;	;"base-size;
+@
+;i";"base_sizeo:Sass::Script::Number:@original"1:@denominator_units[ :@numerator_units[ ;
+@
+;i";i;[ o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT;	@	;
+i#;"B// return just the simple $base-size value if it's not a list:@lines[ :@children[ :
+@loud0o:Sass::Tree::ReturnNode
+;@;	@	;
+i$:
+@expro;	;"base-size;	@	;
+i$;"base_size;[ o;
+;@
+;T;@;i&;"†// if multiple base-sizes are passed in as a list
+// and multiple ratios are passed in as a list
+// calculate values in using each base-size / ratio combination;[ ;	[ ;0u;$‘[o:Sass::Script::Operation
+:@operand1o; 
+;o:Sass::Script::Funcall
+:
+@name"type-of:@keywords{ :@options{ :
+@linei):
+@args[o:Sass::Script::Variable	;"base-size;
+@;i):@underscored_name"base_size;
+@;i):@operator:eq:@operand2o:Sass::Script::String	:
+@type:string;
+@;i):@value"	list;
+@;i);:and;o; 
+;o;
+;"type-of;	{ ;
+@;i);[o;	;"
+ratio;
+@;i);"
+ratio;
+@;i);;;o;	;;;
+@;i);"	list0[o:Sass::Tree::ReturnNode
+:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;
+@;i*:
+@expro;
+;"ms-multibase-multiratio;	{ ;
+@;i*;[o;	;"multiple;
+@;i*;"multipleo;	;"base-size;
+@;i*;"base_sizeo;	;"
+ratio;
+@;i*;"
+ratio:@children[ o;
+;@
+;T;@;i,;"b// if multiple base-sizes are passed in as a list
+// calculate values in using each base-size;[ ;	[ ;0u;$À[o:Sass::Script::Operation
+:@operand1o; 
+;o:Sass::Script::Funcall
+:
+@name"type-of:@keywords{ :@options{ :
+@linei.:
+@args[o:Sass::Script::Variable	;"base-size;
+@;i.:@underscored_name"base_size;
+@;i.:@operator:eq:@operand2o:Sass::Script::String	:
+@type:string;
+@;i.:@value"	list;
+@;i.;:and;o; 
+;o;
+;"type-of;	{ ;
+@;i.;[o;	;"
+ratio;
+@;i.;"
+ratio;
+@;i.;;;o;	;;;
+@;i.;"number0[o:Sass::Tree::ReturnNode
+:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;
+@;i/:
+@expro;
+;"ms-multibase;	{ ;
+@;i/;[o;	;"multiple;
+@;i/;"multipleo;	;"base-size;
+@;i/;"base_sizeo;	;"
+ratio;
+@;i/;"
+ratio:@children[ o;
+;@
+;T;@;i1;"Z// if multiple ratios are passed in as a list
+// calculate values in using each ratio;[ ;	[ ;0u;$Ã[o:Sass::Script::Operation
+:@operand1o; 
+;o:Sass::Script::Funcall
+:
+@name"type-of:@keywords{ :@options{ :
+@linei3:
+@args[o:Sass::Script::Variable	;"base-size;
+@;i3:@underscored_name"base_size;
+@;i3:@operator:eq:@operand2o:Sass::Script::String	:
+@type:string;
+@;i3:@value"number;
+@;i3;:and;o; 
+;o;
+;"type-of;	{ ;
+@;i3;[o;	;"
+ratio;
+@;i3;"
+ratio;
+@;i3;;;o;	;;;
+@;i3;"	list0[o:Sass::Tree::ReturnNode
+:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;
+@;i4:
+@expro;
+;"ms-multiratio;	{ ;
+@;i4;[o;	;"multiple;
+@;i4;"multipleo;	;"base-size;
+@;i4;"base_sizeo;	;"
+ratio;
+@;i4;"
+ratio:@children[ o;
+;@
+;T;@;i6;":// If there are no lists just run the simple function;[ ;	[ ;0o:Sass::Tree::ReturnNode
+;@
+;@;i7;o;
+;o:Sass::Script::Funcall
+;"exponent:@keywords{ ;@;i7:
+@args[o;	;"
+ratio;@;i7;"
+ratioo;	;"multiple;@;i7;"multiple;@;i7;:
+times;o;	;"base-size;@;i7;"base_size;	[ ;([[o;;"multiple;@;"multiple0[o;;"base-size;@;"base_size0[o;;"
+ratio;@;"
+ratio0o;
+;@
+;T;@;i:;"D// calculate values in using each base-size / ratio combination;[ ;	[ ;0o;#;"ms-multibase-multiratio;T;@
+;@;i;;	[o;
+;@
+;T;@;i<;"7// start with an empty list to place all values in;[ ;	[ ;0o;;"scale-values;@
+;@;i=;0;o:Sass::Script::List	;@;i=;[ :@separator:
+space;	[ o;
+;@
+;T;@;i>;"3// make sure base sizes are in ascending order;[ ;	[ ;0o;;"base-size;@
+;@;i?;0;o;&
+;"sort-list;'{ ;@;i?;([o;	;"base-size;@;i?;"base_size;	[ o;
+;@
+;T;@;i@;"#// take each base-size in turn;[ ;	[ ;0o;;"k;@
+;@;iA;0;o;;"1;@;[ ;@;iA;i;	[ o:Sass::Tree::WhileNode;T;@
+;@;iB;o;
+;o;	;"k;@;iB;"k;@;iB;:lte;o;&
+;"length;'{ ;@;iB;([o;	;"base-size;@;iB;"base_size;	[o;
+;@
+;T;@;iC;"8// add each $base-size to the list except the first;[ ;	[ ;0u;$q[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"k:@options{ :
+@lineiD:@underscored_name"k;	@	;
+iD:@operator:gt:@operand2o:Sass::Script::Number:@original"1:@denominator_units[ :@numerator_units[ ;	@	;
+iD:@valuei0[o:Sass::Tree::VariableNode;"scale-values:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;	@	;
+iE:@guarded0:
+@expro:Sass::Script::Funcall
+;"append:@keywords{ ;	@	;
+iE:
+@args[o;	;"scale-values;	@	;
+iE;"scale_valueso;
+;"nth;{ ;	@	;
+iE;[o;	;"base-size;	@	;
+iE;"base_sizeo;	;"k;	@	;
+iE;"k:@children[ o;
+;@
+;T;@;iF;"// take each ratio in turn;[ ;	[ ;0o;;"j;@
+;@;iG;0;o;;"1;@;[ ;@;iG;i;	[ o;-;T;@
+;@;iH;o;
+;o;	;"j;@;iH;"j;@;iH;;.;o;&
+;"length;'{ ;@;iH;([o;	;"
+ratio;@;iH;"
+ratio;	[o;
+;@
+;T;@;iI;")// reset $modular-scale for each set;[ ;	[ ;0o;;"modular-scale;@
+;@;iJ;0;o;&
+;"nth;'{ ;@;iJ;([o;	;"base-size;@;iJ;"base_sizeo;	;"k;@;iJ;"k;	[ o;
+;@
+;T;@;iK;"8// do the scale for each base-size using this ratio;[ ;	[ ;0u;$—[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"multiple:@options{ :
+@lineiL:@underscored_name"multiple;	@	;
+iL:@operator:gt:@operand2o:Sass::Script::Number:@original"0:@denominator_units[ :@numerator_units[ ;	@	;
+iL:@valuei 0[o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT;	@	;
+iM;"A// up $multiple times
+// and add the result to $scale-values:@lines[ :@children[ :
+@loud0o:Sass::Tree::ForNode:@exclusiveF:@too;	;"multiple;	@	;
+iO;"multiple:@has_childrenT;@;	@	;
+iO:
+@fromo;;"1;@;[ ;	@	;
+iO;i:	@var"i;[o:Sass::Tree::VariableNode;"modular-scale;@;	@	;
+iP:@guarded0:
+@expro; 
+;o:Sass::Script::Funcall
+;"exponent:@keywords{ ;	@	;
+iP:
+@args[o;#
+;"nth;${ ;	@	;
+iP;%[o;	;"
+ratio;	@	;
+iP;"
+ratioo;	;"j;	@	;
+iP;"jo;	;"i;	@	;
+iP;"i;	@	;
+iP;:
+times;o;#
+;"nth;${ ;	@	;
+iP;%[o;	;"base-size;	@	;
+iP;"base_sizeo;	;"k;	@	;
+iP;"k;[ o; ;"scale-values;@;	@	;
+iQ;!0;"o;#
+;"append;${ ;	@	;
+iQ;%[o;	;"scale-values;	@	;
+iQ;"scale_valueso;	;"modular-scale;	@	;
+iQ;"modular_scale;[ o;;@;T;	@	;
+iR;"k// and down until the value is lower than the lowest $base-size
+// and add the result to $scale-values;[ ;[ ;0o; ;"i;@;	@	;
+iT;!0;"o;;"-1;@;[ ;	@	;
+iT;i˙;[ o; ;"modular-scale;@;	@	;
+iU;!0;"o;#
+;"nth;${ ;	@	;
+iU;%[o;	;"base-size;	@	;
+iU;"base_sizeo;	;"k;	@	;
+iU;"k;[ o:Sass::Tree::WhileNode;T;@;	@	;
+iV;"o; 
+;o;	;"modular-scale;	@	;
+iV;"modular_scale;	@	;
+iV;:gte;o;#
+;"nth;${ ;	@	;
+iV;%[o;	;"base-size;	@	;
+iV;"base_sizeo;;"1;@;[ ;	@	;
+iV;i;[o; ;"modular-scale;@;	@	;
+iW;!0;"o; 
+;o;#
+;"exponent;${ ;	@	;
+iW;%[o;#
+;"nth;${ ;	@	;
+iW;%[o;	;"
+ratio;	@	;
+iW;"
+ratioo;	;"j;	@	;
+iW;"jo;	;"i;	@	;
+iW;"i;	@	;
+iW;;&;o;#
+;"nth;${ ;	@	;
+iW;%[o;	;"base-size;	@	;
+iW;"base_sizeo;	;"k;	@	;
+iW;"k;[ o; ;"scale-values;@;	@	;
+iX;!0;"o;#
+;"append;${ ;	@	;
+iX;%[o;	;"scale-values;	@	;
+iX;"scale_valueso;	;"modular-scale;	@	;
+iX;"modular_scale;[ o; ;"i;@;	@	;
+iY;!0;"o; 
+;o;	;"i;	@	;
+iY;"i;	@	;
+iY;:
+minus;o;;"1;@;[ ;	@	;
+iY;i;[ u;$±[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"multiple:@options{ :
+@lineiZ:@underscored_name"multiple;	@	;
+iZ:@operator:lt:@operand2o:Sass::Script::Number:@original"0:@denominator_units[ :@numerator_units[ ;	@	;
+iZ:@valuei 0[	o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT;	@	;
+i[;"3// do the scale down for each set to below 1px:@lines[ :@children[ :
+@loud0o:Sass::Tree::VariableNode;"i;@;	@	;
+i\:@guarded0:
+@expro;;"-1;@;[ ;	@	;
+i\;i˙;[ o;;"modular-scale;@;	@	;
+i];0;o:Sass::Script::Funcall
+;"nth:@keywords{ ;	@	;
+i]:
+@args[o;	;"base-size;	@	;
+i];"base_sizeo;	;"k;	@	;
+i];"k;[ o:Sass::Tree::WhileNode:@has_childrenT;@;	@	;
+i^;o; 
+;o;	;"modular-scale;	@	;
+i^;"modular_scale;	@	;
+i^;:gt;o;;"1;@;[ ;	@	;
+i^;i;[o;;"modular-scale;@;	@	;
+i_;0;o; 
+;o;
+;"exponent;{ ;	@	;
+i_;[o;
+;"nth;{ ;	@	;
+i_;[o;	;"
+ratio;	@	;
+i_;"
+ratioo;	;"j;	@	;
+i_;"jo;	;"i;	@	;
+i_;"i;	@	;
+i_;:
+times;o;
+;"nth;{ ;	@	;
+i_;[o;	;"base-size;	@	;
+i_;"base_sizeo;	;"k;	@	;
+i_;"k;[ o;;"scale-values;@;	@	;
+i`;0;o;
+;"append;{ ;	@	;
+i`;[o;	;"scale-values;	@	;
+i`;"scale_valueso;	;"modular-scale;	@	;
+i`;"modular_scale;[ o;;"i;@;	@	;
+ia;0;o; 
+;o;	;"i;	@	;
+ia;"i;	@	;
+ia;:
+minus;o;;"1;@;[ ;	@	;
+ia;i;[ o;;"j;@
+;@;ib;0;o;
+;o;	;"j;@;ib;"j;@;ib;:	plus;o;;"1;@;[ ;@;ib;i;	[ o;;"k;@
+;@;ic;0;o;
+;o;	;"k;@;ic;"k;@;ic;;/;o;;"1;@;[ ;@;ic;i;	[ o;
+;@
+;T;@;id;",// return trimmed and sorted final list;[ ;	[ ;0o;%
+;@
+;@;ie;o;&
+;"trim-sort;'{ ;@;ie;([o;	;"multiple;@;ie;"multipleo;	;"scale-values;@;ie;"scale_valueso;	;"base-size;@;ie;"base_size;	[ ;([[o;;"multiple;@;"multiple0[o;;"base-size;@;"base_size0[o;;"
+ratio;@;"
+ratio0o;
+;@
+;T;@;ih;"0// calculate values in using each base-size;[ ;	[ ;0o;#;"ms-multibase;T;@
+;@;ii;	[o;
+;@
+;T;@;ij;"7// start with an empty list to place all values in;[ ;	[ ;0o;;"scale-values;@
+;@;ik;0;o;*	;@;ik;[ ;+;,;	[ o;
+;@
+;T;@;il;"3// make sure base sizes are in ascending order;[ ;	[ ;0o;;"base-size;@
+;@;im;0;o;&
+;"sort-list;'{ ;@;im;([o;	;"base-size;@;im;"base_size;	[ o;
+;@
+;T;@;in;"#// take each base-size in turn;[ ;	[ ;0o;;"k;@
+;@;io;0;o;;"1;@;[ ;@;io;i;	[ o;-;T;@
+;@;ip;o;
+;o;	;"k;@;ip;"k;@;ip;;.;o;&
+;"length;'{ ;@;ip;([o;	;"base-size;@;ip;"base_size;	[o;
+;@
+;T;@;iq;"8// add each $base-size to the list except the first;[ ;	[ ;0u;$q[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"k:@options{ :
+@lineir:@underscored_name"k;	@	;
+ir:@operator:gt:@operand2o:Sass::Script::Number:@original"1:@denominator_units[ :@numerator_units[ ;	@	;
+ir:@valuei0[o:Sass::Tree::VariableNode;"scale-values:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;	@	;
+is:@guarded0:
+@expro:Sass::Script::Funcall
+;"append:@keywords{ ;	@	;
+is:
+@args[o;	;"scale-values;	@	;
+is;"scale_valueso;
+;"nth;{ ;	@	;
+is;[o;	;"base-size;	@	;
+is;"base_sizeo;	;"k;	@	;
+is;"k:@children[ o;
+;@
+;T;@;it;")// reset $modular-scale for each set;[ ;	[ ;0o;;"modular-scale;@
+;@;iu;0;o;&
+;"nth;'{ ;@;iu;([o;	;"base-size;@;iu;"base_sizeo;	;"k;@;iu;"k;	[ o;
+;@
+;T;@;iv;"8// do the scale for each base-size using this ratio;[ ;	[ ;0u;$â[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"multiple:@options{ :
+@lineiw:@underscored_name"multiple;	@	;
+iw:@operator:gt:@operand2o:Sass::Script::Number:@original"0:@denominator_units[ :@numerator_units[ ;	@	;
+iw:@valuei 0[o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT;	@	;
+ix;"A// up $multiple times
+// and add the result to $scale-values:@lines[ :@children[ :
+@loud0o:Sass::Tree::ForNode:@exclusiveF:@too;	;"multiple;	@	;
+iz;"multiple:@has_childrenT;@;	@	;
+iz:
+@fromo;;"1;@;[ ;	@	;
+iz;i:	@var"i;[o:Sass::Tree::VariableNode;"modular-scale;@;	@	;
+i{:@guarded0:
+@expro; 
+;o:Sass::Script::Funcall
+;"exponent:@keywords{ ;	@	;
+i{:
+@args[o;	;"
+ratio;	@	;
+i{;"
+ratioo;	;"i;	@	;
+i{;"i;	@	;
+i{;:
+times;o;#
+;"nth;${ ;	@	;
+i{;%[o;	;"base-size;	@	;
+i{;"base_sizeo;	;"k;	@	;
+i{;"k;[ o; ;"scale-values;@;	@	;
+i|;!0;"o;#
+;"append;${ ;	@	;
+i|;%[o;	;"scale-values;	@	;
+i|;"scale_valueso;	;"modular-scale;	@	;
+i|;"modular_scale;[ o;;@;T;	@	;
+i};"k// and down until the value is lower than the lowest $base-size
+// and add the result to $scale-values;[ ;[ ;0o; ;"i;@;	@	;
+i;!0;"o;;"-1;@;[ ;	@	;
+i;i˙;[ o; ;"modular-scale;@;	@	;
+i{;!0;"o;#
+;"nth;${ ;	@	;
+i{;%[o;	;"base-size;	@	;
+i{;"base_sizeo;	;"k;	@	;
+i{;"k;[ o:Sass::Tree::WhileNode;T;@;	@	;
+i|;"o; 
+;o;	;"modular-scale;	@	;
+i|;"modular_scale;	@	;
+i|;:gte;o;#
+;"nth;${ ;	@	;
+i|;%[o;	;"base-size;	@	;
+i|;"base_sizeo;;"1;@;[ ;	@	;
+i|;i;[o; ;"modular-scale;@;	@	;
+i};!0;"o; 
+;o;#
+;"exponent;${ ;	@	;
+i};%[o;	;"
+ratio;	@	;
+i};"
+ratioo;	;"i;	@	;
+i};"i;	@	;
+i};;&;o;#
+;"nth;${ ;	@	;
+i};%[o;	;"base-size;	@	;
+i};"base_sizeo;	;"k;	@	;
+i};"k;[ o; ;"scale-values;@;	@	;
+i~;!0;"o;#
+;"append;${ ;	@	;
+i~;%[o;	;"scale-values;	@	;
+i~;"scale_valueso;	;"modular-scale;	@	;
+i~;"modular_scale;[ o; ;"i;@;	@	;
+i;!0;"o; 
+;o;	;"i;	@	;
+i;"i;	@	;
+i;:
+minus;o;;"1;@;[ ;	@	;
+i;i;[ u;$û[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"multiple:@options{ :
+@lineiÄ:@underscored_name"multiple;	@	;
+iÄ:@operator:lt:@operand2o:Sass::Script::Number:@original"0:@denominator_units[ :@numerator_units[ ;	@	;
+iÄ:@valuei 0[	o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT;	@	;
+iÅ;"3// do the scale down for each set to below 1px:@lines[ :@children[ :
+@loud0o:Sass::Tree::VariableNode;"i;@;	@	;
+iÇ:@guarded0:
+@expro;;"-1;@;[ ;	@	;
+iÇ;i˙;[ o;;"modular-scale;@;	@	;
+iÉ;0;o:Sass::Script::Funcall
+;"nth:@keywords{ ;	@	;
+iÉ:
+@args[o;	;"base-size;	@	;
+iÉ;"base_sizeo;	;"k;	@	;
+iÉ;"k;[ o:Sass::Tree::WhileNode:@has_childrenT;@;	@	;
+iÑ;o; 
+;o;	;"modular-scale;	@	;
+iÑ;"modular_scale;	@	;
+iÑ;:gt;o;;"1;@;[ ;	@	;
+iÑ;i;[o;;"modular-scale;@;	@	;
+iÖ;0;o; 
+;o;
+;"exponent;{ ;	@	;
+iÖ;[o;	;"
+ratio;	@	;
+iÖ;"
+ratioo;	;"i;	@	;
+iÖ;"i;	@	;
+iÖ;:
+times;o;
+;"nth;{ ;	@	;
+iÖ;[o;	;"base-size;	@	;
+iÖ;"base_sizeo;	;"k;	@	;
+iÖ;"k;[ o;;"scale-values;@;	@	;
+iÜ;0;o;
+;"append;{ ;	@	;
+iÜ;[o;	;"scale-values;	@	;
+iÜ;"scale_valueso;	;"modular-scale;	@	;
+iÜ;"modular_scale;[ o;;"i;@;	@	;
+iá;0;o; 
+;o;	;"i;	@	;
+iá;"i;	@	;
+iá;:
+minus;o;;"1;@;[ ;	@	;
+iá;i;[ o;;"k;@
+;@;ià;0;o;
+;o;	;"k;@;ià;"k;@;ià;;/;o;;"1;@;[ ;@;ià;i;	[ o;
+;@
+;T;@;iâ;",// return trimmed and sorted final list;[ ;	[ ;0o;%
+;@
+;@;iä;o;&
+;"trim-sort;'{ ;@;iä;([o;	;"multiple;@;iä;"multipleo;	;"scale-values;@;iä;"scale_valueso;	;"base-size;@;iä;"base_size;	[ ;([[o;;"multiple;@;"multiple0[o;;"base-size;@;"base_size0[o;;"
+ratio;@;"
+ratio0o;
+;@
+;T;@;iç;",// calculate values in using each ratio;[ ;	[ ;0o;#;"ms-multiratio;T;@
+;@;ié;	[o;
+;@
+;T;@;iè;"7// start with an empty list to place all values in;[ ;	[ ;0o;;"scale-values;@
+;@;iê;0;o;*	;@;iê;[ ;+;,;	[ o;
+;@
+;T;@;ië;"9// If $multiple is a positive integer (up the scale);[ ;	[ ;0u;$H[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"multiple:@options{ :
+@lineií:@underscored_name"multiple;	@	;
+ií:@operator:gt:@operand2o:Sass::Script::Number:@original"0:@denominator_units[ :@numerator_units[ ;	@	;
+ií:@valuei 0[o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT;	@	;
+iì;"// take each ratio in turn:@lines[ :@children[ :
+@loud0o:Sass::Tree::VariableNode;"j;@;	@	;
+iî:@guarded0:
+@expro;;"1;@;[ ;	@	;
+iî;i;[ o:Sass::Tree::WhileNode:@has_childrenT;@;	@	;
+iï;o; 
+;o;	;"j;	@	;
+iï;"j;	@	;
+iï;:lte;o:Sass::Script::Funcall
+;"length:@keywords{ ;	@	;
+iï:
+@args[o;	;"
+ratio;	@	;
+iï;"
+ratio;[
+o;;@;T;	@	;
+iñ;")// reset $modular-scale for each set;[ ;[ ;0o;;"modular-scale;@;	@	;
+ió;0;o;	;"base-size;	@	;
+ió;"base_size;[ o;;@;T;	@	;
+iò;"\// do the scale using this ratio thru the multiple, and add the result to $scale-values;[ ;[ ;0o:Sass::Tree::ForNode:@exclusiveF:@too;	;"multiple;	@	;
+iô;"multiple;T;@;	@	;
+iô:
+@fromo;;"1;@;[ ;	@	;
+iô;i:	@var"i;[o;;"modular-scale;@;	@	;
+iö;0;o; 
+;o; 
+;"exponent;!{ ;	@	;
+iö;"[o; 
+;"nth;!{ ;	@	;
+iö;"[o;	;"
+ratio;	@	;
+iö;"
+ratioo;	;"j;	@	;
+iö;"jo;	;"i;	@	;
+iö;"i;	@	;
+iö;:
+times;o;	;"base-size;	@	;
+iö;"base_size;[ o;;"scale-values;@;	@	;
+iõ;0;o; 
+;"append;!{ ;	@	;
+iõ;"[o;	;"scale-values;	@	;
+iõ;"scale_valueso;	;"modular-scale;	@	;
+iõ;"modular_scale;[ o;;"j;@;	@	;
+iú;0;o; 
+;o;	;"j;	@	;
+iú;"j;	@	;
+iú;:	plus;o;;"1;@;[ ;	@	;
+iú;i;[ o;;@;T;	@	;
+iù;"// sort acsending;[ ;[ ;0o;;"scale-values;@;	@	;
+iû;0;o; 
+;"sort-list;!{ ;	@	;
+iû;"[o;	;"scale-values;	@	;
+iû;"scale_values;[ o;;@;T;	@	;
+iü;"3// return the final value using the laced list;[ ;[ ;0o:Sass::Tree::ReturnNode
+;@;	@	;
+i†;o; 
+;"nth;!{ ;	@	;
+i†;"[o;	;"scale-values;	@	;
+i†;"scale_valueso;	;"multiple;	@	;
+i†;"multiple;[ o;
+;@
+;T;@;i°;";// If $multiple is a negative integer (down the scale);[ ;	[ ;0u;$#	[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"multiple:@options{ :
+@linei¢:@underscored_name"multiple;	@	;
+i¢:@operator:lt:@operand2o:Sass::Script::Number:@original"0:@denominator_units[ :@numerator_units[ ;	@	;
+i¢:@valuei 0[o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT;	@	;
+i£;"// take each ratio in turn:@lines[ :@children[ :
+@loud0o:Sass::Tree::VariableNode;"j;@;	@	;
+i§:@guarded0:
+@expro;;"1;@;[ ;	@	;
+i§;i;[ o:Sass::Tree::WhileNode:@has_childrenT;@;	@	;
+i•;o; 
+;o;	;"j;	@	;
+i•;"j;	@	;
+i•;:lte;o:Sass::Script::Funcall
+;"length:@keywords{ ;	@	;
+i•:
+@args[o;	;"
+ratio;	@	;
+i•;"
+ratio;[
+o;;@;T;	@	;
+i¶;")// reset $modular-scale for each set;[ ;[ ;0o;;"modular-scale;@;	@	;
+iß;0;o;	;"base-size;	@	;
+iß;"base_size;[ o;;@;T;	@	;
+i®;"\// do the scale using this ratio thru the multiple, and add the result to $scale-values;[ ;[ ;0o:Sass::Tree::ForNode:@exclusiveF:@too; 
+;o;	;"multiple;	@	;
+i©;"multiple;	@	;
+i©;:
+times;o;;"-1;@;[ ;	@	;
+i©;i˙;T;@;	@	;
+i©:
+@fromo;;"1;@;[ ;	@	;
+i©;i:	@var"i;[o;;"modular-scale;@;	@	;
+i™;0;o; 
+;o; 
+;"exponent;!{ ;	@	;
+i™;"[o; 
+;"nth;!{ ;	@	;
+i™;"[o;	;"
+ratio;	@	;
+i™;"
+ratioo;	;"j;	@	;
+i™;"jo:!Sass::Script::UnaryOperation	;	@	;
+i™:@operando;	;"i;	@	;
+i™;"i;:
+minus;	@	;
+i™;;&;o;	;"base-size;	@	;
+i™;"base_size;[ o;;"scale-values;@;	@	;
+i´;0;o; 
+;"append;!{ ;	@	;
+i´;"[o;	;"scale-values;	@	;
+i´;"scale_valueso;	;"modular-scale;	@	;
+i´;"modular_scale;[ o;;"j;@;	@	;
+i¨;0;o; 
+;o;	;"j;	@	;
+i¨;"j;	@	;
+i¨;:	plus;o;;"1;@;[ ;	@	;
+i¨;i;[ o;;@;T;	@	;
+i≠;"// sort decending;[ ;[ ;0o;;"scale-values;@;	@	;
+iÆ;0;o; 
+;"sort-list;!{ ;	@	;
+iÆ;"[o;	;"scale-values;	@	;
+iÆ;"scale_valueso:Sass::Script::String	:
+@type:string;	@	;
+iÆ;"dec;[ o;;@;T;	@	;
+iØ;"3// return the final value using the laced list;[ ;[ ;0o:Sass::Tree::ReturnNode
+;@;	@	;
+i∞;o; 
+;"nth;!{ ;	@	;
+i∞;"[o;	;"scale-values;	@	;
+i∞;"scale_valueso; 
+;o;	;"multiple;	@	;
+i∞;"multiple;	@	;
+i∞;;&;o;;"-1;@;[ ;	@	;
+i∞;i˙;[ ;([[o;;"multiple;@;"multiple0[o;;"base-size;@;"base_size0[o;;"
+ratio;@;"
+ratio0o;
+;@
+;T;@;i≥;"$// trim and sort the final list;[ ;	[ ;0o;#;"trim-sort;T;@
+;@;i¥;	[u;$|	[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"multiple:@options{ :
+@lineiµ:@underscored_name"multiple;	@	;
+iµ:@operator:gt:@operand2o:Sass::Script::Number:@original"0:@denominator_units[ :@numerator_units[ ;	@	;
+iµ:@valuei u:Sass::Tree::IfNode∑[00[o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT:@options{ :
+@lineiΩ:@value"<// trim list so we can count from the lowest $base-size:@lines[ :@children[ :
+@loud0o:Sass::Tree::VariableNode:
+@name"scale-values;@;@	;	iæ:@guarded0:
+@expro:Sass::Script::Funcall
+;"trim-list:@keywords{ ;@	;	iæ:
+@args[o:Sass::Script::Variable	;"scale-values;@	;	iæ:@underscored_name"scale_valueso;
+;"nth;{ ;@	;	iæ;[o;	;"base-size;@	;	iæ;"base_sizeo:Sass::Script::Number:@original"1:@denominator_units[ :@numerator_units[ ;@	;	iæ;
+io:Sass::Script::String	:
+@type:string;@	;	iæ;
+"dec;[ o; ;@;T;@	;	iø;
+"// sort acsending;[ ;[ ;0o;;"scale-values;@;@	;	i¿;0;o;
+;"sort-list;{ ;@	;	i¿;[o;	;"scale-values;@	;	i¿;"scale_valueso;	;;;@	;	i¿;
+"dec;[ o; ;@;T;@	;	i¡;
+"3// return the final value using the laced list;[ ;[ ;0o:Sass::Tree::ReturnNode
+;@;@	;	i¬;o;
+;"nth;{ ;@	;	i¬;[o;	;"scale-values;@	;	i¬;"scale_valueso:!Sass::Script::UnaryOperation	;@	;	i¬:@operando;	;"multiple;@	;	i¬;"multiple:@operator:
+minus;[ [o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT;	@	;
+i∂;"<// trim list so we can count from the lowest $base-size:@lines[ :@children[ :
+@loud0o:Sass::Tree::VariableNode;"scale-values;@;	@	;
+i∑:@guarded0:
+@expro:Sass::Script::Funcall
+;"trim-list:@keywords{ ;	@	;
+i∑:
+@args[o;	;"scale-values;	@	;
+i∑;"scale_valueso;
+;"nth;{ ;	@	;
+i∑; [o;	;"base-size;	@	;
+i∑;"base_sizeo;;"1;@;[ ;	@	;
+i∑;i;[ o;;@;T;	@	;
+i∏;"// sort acsending;[ ;[ ;0o;;"scale-values;@;	@	;
+iπ;0;o;
+;"sort-list;{ ;	@	;
+iπ; [o;	;"scale-values;	@	;
+iπ;"scale_values;[ o;;@;T;	@	;
+i∫;"3// return the final value using the laced list;[ ;[ ;0o:Sass::Tree::ReturnNode
+;@;	@	;
+iª;o;
+;"nth;{ ;	@	;
+iª; [o;	;"scale-values;	@	;
+iª;"scale_valueso;	;"multiple;	@	;
+iª;"multiple;[ ;([[o;;"multiple;@;"multiple0[o;;"scale-values;@;"scale_values0[o;;"base-size;@;"base_size0o;
+;@
+;T;@;i≈;"N/////////////////////////////////////////////////////////////////////////;[ ;	[ ;0o;
+;@
+;T;@;i«;"// Shortcut;[ ;	[ ;0o;#;"ms;T;@
+;@;i»;	[o;
+;@
+;T;@;i…;"8// Return the value from the Modular Scale function;[ ;	[ ;0o;%
+;@
+;@;i ;o;&
+;"modular-scale;'{ ;@;i ;([o;	;"multiple;@;i ;"multipleo;	;"base-size;@;i ;"base_sizeo;	;"
+ratio;@;i ;"
+ratio;	[ ;([[o;;"multiple;@;"multiple0[o;;"base-size;@;"base_size0[o;;"
+ratio;@;"
+ratio0o;
+;@
+;T;@;iÃ;"E// Mixin
+// Deprecated. Use the modular-scale() function instead;[ ;	[ ;0o:Sass::Tree::MixinDefNode;"modular-scale;T;@
+;@;iŒ;	[o;
+;@
+;T;@;iœ;"P// Print the $property and return the value from the Modular Scale function;[ ;	[ ;0o:Sass::Tree::WarnNode
+;@
+;@;i–;o; 	;!:string;@;i–;"]The modular-scale mixin is deprecated. Instead use the function: width: modular-scale(3);	[ o:Sass::Tree::PropNode:
+@tabsi ;[" o;	;"property;@;i—;"property" :@prop_syntax:new;@
+;@;i—;o;&
+;"modular-scale;'{ ;@;i—;([o;	;"multiple;@;i—;"multipleo;	;"base-size;@;i—;"base_sizeo;	;"
+ratio;@;i—;"
+ratio;	[ ;([	[o;;"property;{:original_filename@
+:filesystem_importerc Sass::Importers::Filesystem:cache_storeo:Sass::CacheStores::Chain:@caches[u:Sass::CacheStores::Memory o:"Sass::CacheStores::Filesystem:@cache_location"./.sass-cache:
+cacheT:property_syntax0:
+style:nested:load_paths[o: Sass::Importers::Filesystem:
+@root"0/Users/mason/www/woodcock/serve/stylesheets:syntax:	sass:cache_location@Ä:importer@Ç:line_comments0:filename@
+;"property0[o;;"multiple;@z;"multiple0[o;;"base-size;@z;"base_size0[o;;"
+ratio;@z;"
+ratio0o;
+;@
+;T;@;i”;"// Classes Mixin;[ ;	[ ;0o;0;"modular-scale-classes;T;@
+;@;i‘;	[o;
+;@
+;T;@;i’;"R// Loop from 0 through the value of $multiple and generate a range of classes;[ ;	[ ;0o:Sass::Tree::ForNode:@exclusiveF:@too;	;"multiple;@;i÷;"multiple;T;@
+;@;i÷:
+@fromo;;"0;@;[ ;@;i÷;i :	@var"i;	[o:Sass::Tree::RuleNode;4i ;T;@
+:
+@rule[
+".o;	;"class-slug;@;i◊;"class_slug"-o;	;"i;@;i◊;"i" ;@;i◊;	[o;
+;@
+;T;@;iÿ;"P// Print the $property and return the value from the Modular Scale function;[ ;	[ ;0o;3;4i ;[" o;	;"property;@;iŸ;"property" ;5;6;@
+;@;iŸ;o;&
+;"modular-scale;'{ ;@;iŸ;([o;	;"i;@;iŸ;"io;	;"base-size;@;iŸ;"base_sizeo;	;"
+ratio;@;iŸ;"
+ratio;	[ ;([
+[o;;"multiple;@z;"multiple0[o;;"property;@z;"property0[o;;"class-slug;@z;"class_slug0[o;;"base-size;@z;"base_size0[o;;"
+ratio;@z;"
+ratio0o;
+;@
+;T;@;i‹;"N/////////////////////////////////////////////////////////////////////////;[ ;	[ ;0o;
+;@
+;T;@;iﬂ;"// Sass exponent support;[ ;	[ ;0o;#;"exponent;T;@
+;@;i‡;	[o;
+;@
+;T;@;i·;"// reset value;[ ;	[ ;0o;;"
+value;@
+;@;i‚;0;o;	;"	base;@;i‚;"	base;	[ o;
+;@
+;T;@;i„;")// positive intergers get multiplied;[ ;	[ ;0u;$´[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"exponent:@options{ :
+@linei‰:@underscored_name"exponent;	@	;
+i‰:@operator:gt:@operand2o:Sass::Script::Number:@original"1:@denominator_units[ :@numerator_units[ ;	@	;
+i‰:@valuei0[o:Sass::Tree::ForNode:@exclusiveF:@too;	;"exponent;	@	;
+iÂ;"exponent:@has_childrenT:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;	@	;
+iÂ:
+@fromo;;"2;@;[ ;	@	;
+iÂ;i:	@var"i:@children[o:Sass::Tree::VariableNode;"
+value;@;	@	;
+iÊ:@guarded0:
+@expro; 
+;o;	;"
+value;	@	;
+iÊ;"
+value;	@	;
+iÊ;:
+times;o;	;"	base;	@	;
+iÊ;"	base;[ o;
+;@
+;T;@;iÁ;"G// negitive intergers get divided. A number divided by itself is 1;[ ;	[ ;0u;$Â[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"exponent:@options{ :
+@lineiË:@underscored_name"exponent;	@	;
+iË:@operator:lt:@operand2o:Sass::Script::Number:@original"1:@denominator_units[ :@numerator_units[ ;	@	;
+iË:@valuei0[o:Sass::Tree::ForNode:@exclusiveF:@too:!Sass::Script::UnaryOperation	;	@	;
+iÈ:@operando;	;"exponent;	@	;
+iÈ;"exponent;:
+minus:@has_childrenT:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;	@	;
+iÈ:
+@fromo;;"0;@;[ ;	@	;
+iÈ;i :	@var"i:@children[o:Sass::Tree::VariableNode;"
+value;@;	@	;
+iÍ:@guarded0:
+@expro; 
+;o;	;"
+value;	@	;
+iÍ;"
+value;	@	;
+iÍ;:div;o;	;"	base;	@	;
+iÍ;"	base;[ o;
+;@
+;T;@;iÎ;"%// return the last value written;[ ;	[ ;0o;%
+;@
+;@;iÏ;o;	;"
+value;@;iÏ;"
+value;	[ ;([[o;;"	base;@;"	base0[o;;"exponent;@;"exponent0o;
+;@
+;T;@;iÔ;"!// Sass list sorting support;[ ;	[ ;0o;#;"sort-list;T;@
+;@;i;	[o;
+;@
+;T;@;iÒ;"// built-in list sorting in Sass would make this go away.
+// declare some empty lists to put our new order and temporary values;[ ;	[ ;0o;;"new-order;@
+;@;iÛ;0;o;*	;@;iÛ;[ ;+;,;	[ o;;"	temp;@
+;@;iÙ;0;o;*	;@;iÙ;[ ;+;,;	[ o;
+;@
+;T;@;iı;"-// fill $temp with the contents of $list;[ ;	[ ;0o;;"	temp;@
+;@;iˆ;0;o;&
+;"	join;'{ ;@;iˆ;([o;	;"	temp;@;iˆ;"	tempo;	;"	list;@;iˆ;"	list;	[ o;
+;@
+;T;@;i˜;"// if sorting ascending;[ ;	[ ;0u;$[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"dir:@options{ :
+@linei¯:@underscored_name"dir;	@	;
+i¯:@operator:eq:@operand2o:Sass::Script::String	:
+@type:string;	@	;
+i¯:@value"asc0[o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT;	@	;
+i˘;"(// loop through all values in $list:@lines[ :@children[ :
+@loud0o:Sass::Tree::ForNode:@exclusiveF:@too:Sass::Script::Funcall
+;"length:@keywords{ ;	@	;
+i˙:
+@args[o;	;"	list;	@	;
+i˙;"	list:@has_childrenT;@;	@	;
+i˙:
+@fromo:Sass::Script::Number:@original"1:@denominator_units[ :@numerator_units[ ;	@	;
+i˙;i:	@var"i;[o;;@;T;	@	;
+i˚;"0// impossibly high starter value to compare;[ ;[ ;0o:Sass::Tree::VariableNode;"low;@;	@	;
+i¸:@guarded0:
+@expro;!;""1000000;#@;$[ ;	@	;
+i¸;i@B;[ o;;@;T;	@	;
+i˝;"'// check for lowest value in $temp;[ ;[ ;0o;;F;o;
+;"length;{ ;	@	;
+i˛;[o;	;"	temp;	@	;
+i˛;"	temp;T;@;	@	;
+i˛; o;!;""1;#@;$[ ;	@	;
+i˛;i;%"j;[u:Sass::Tree::IfNode[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Funcall
+:
+@name"nth:@keywords{ :@options{ :
+@lineiˇ:
+@args[o:Sass::Script::Variable	;"	temp;
+@
+;iˇ:@underscored_name"	tempo;	;"j;
+@
+;iˇ;"j;
+@
+;iˇ:@operator:lt:@operand2o;	;"low;
+@
+;iˇ;"low0[o:Sass::Tree::VariableNode;"low:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;
+@
+;i :@guarded0:
+@expro;
+;"nth;	{ ;
+@
+;i ;[o;	;"	temp;
+@
+;i ;"	tempo;	;"j;
+@
+;i ;"j:@children[ o;;@;T;	@	;
+i;"&// add lowest value to $new-order;[ ;[ ;0o;&;"new-order;@;	@	;
+i;'0;(o;
+;"append;{ ;	@	;
+i;[o;	;"new-order;	@	;
+i;"new_ordero;	;"low;	@	;
+i;"low;[ o;;@;T;	@	;
+i;"+// empty $temp for the next comparison;[ ;[ ;0o;&;"	temp;@;	@	;
+i;'0;(o:Sass::Script::List	;	@	;
+i;[ :@separator:
+space;[ o;;@;T;	@	;
+i;"7// re-populate $temp with remaining values to sort;[ ;[ ;0o;;F;o;
+;"length;{ ;	@	;
+i;[o;	;"	list;	@	;
+i;"	list;T;@;	@	;
+i; o;!;""1;#@;$[ ;	@	;
+i;i;%"k;[u;)T[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Funcall
+:
+@name"nth:@keywords{ :@options{ :
+@linei:
+@args[o:Sass::Script::Variable	;"	list;
+@
+;i:@underscored_name"	listo;	;"k;
+@
+;i;"k;
+@
+;i:@operator:gt:@operand2o;	;"low;
+@
+;i;"low0[o:Sass::Tree::VariableNode;"	temp:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;
+@
+;i:@guarded0:
+@expro;
+;"append;	{ ;
+@
+;i;[o;	;"	temp;
+@
+;i;"	tempo;
+;"nth;	{ ;
+@
+;i;[o;	;"	list;
+@
+;i;"	listo;	;"k;
+@
+;i;"k:@children[ u;$…
+[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"dir:@options{ :
+@linei	:@underscored_name"dir;	@	;
+i	:@operator:eq:@operand2o:Sass::Script::String	:
+@type:string;	@	;
+i	:@value"dec0[o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT;	@	;
+i
+;"(// loop through all values in $list:@lines[ :@children[ :
+@loud0o:Sass::Tree::ForNode:@exclusiveF:@too:Sass::Script::Funcall
+;"length:@keywords{ ;	@	;
+i:
+@args[o;	;"	list;	@	;
+i;"	list:@has_childrenT;@;	@	;
+i:
+@fromo:Sass::Script::Number:@original"1:@denominator_units[ :@numerator_units[ ;	@	;
+i;i:	@var"i;[o;;@;T;	@	;
+i;"// 0 starter value;[ ;[ ;0o:Sass::Tree::VariableNode;"	high;@;	@	;
+i:@guarded0:
+@expro;!;""0;#@;$[ ;	@	;
+i;i ;[ o;;@;T;	@	;
+i;"(// check for highest value in $temp;[ ;[ ;0o;;F;o;
+;"length;{ ;	@	;
+i;[o;	;"	temp;	@	;
+i;"	temp;T;@;	@	;
+i; o;!;""1;#@;$[ ;	@	;
+i;i;%"j;[u:Sass::Tree::IfNode[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Funcall
+:
+@name"nth:@keywords{ :@options{ :
+@linei:
+@args[o:Sass::Script::Variable	;"	temp;
+@
+;i:@underscored_name"	tempo;	;"j;
+@
+;i;"j;
+@
+;i:@operator:gt:@operand2o;	;"	high;
+@
+;i;"	high0[o:Sass::Tree::VariableNode;"	high:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;
+@
+;i:@guarded0:
+@expro;
+;"nth;	{ ;
+@
+;i;[o;	;"	temp;
+@
+;i;"	tempo;	;"j;
+@
+;i;"j:@children[ o;&;"new-order;@;	@	;
+i;'0;(o;
+;"append;{ ;	@	;
+i;[o;	;"new-order;	@	;
+i;"new_ordero;	;"	high;	@	;
+i;"	high;[ o;;@;T;	@	;
+i;"+// empty $temp for the next comparison;[ ;[ ;0o;&;"	temp;@;	@	;
+i;'0;(o:Sass::Script::List	;	@	;
+i;[ :@separator:
+space;[ o;;@;T;	@	;
+i;"7// re-populate $temp with remaining values to sort;[ ;[ ;0o;;F;o;
+;"length;{ ;	@	;
+i;[o;	;"	list;	@	;
+i;"	list;T;@;	@	;
+i; o;!;""1;#@;$[ ;	@	;
+i;i;%"k;[u;)V[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Funcall
+:
+@name"nth:@keywords{ :@options{ :
+@linei:
+@args[o:Sass::Script::Variable	;"	list;
+@
+;i:@underscored_name"	listo;	;"k;
+@
+;i;"k;
+@
+;i:@operator:lt:@operand2o;	;"	high;
+@
+;i;"	high0[o:Sass::Tree::VariableNode;"	temp:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;
+@
+;i:@guarded0:
+@expro;
+;"append;	{ ;
+@
+;i;[o;	;"	temp;
+@
+;i;"	tempo;
+;"nth;	{ ;
+@
+;i;[o;	;"	list;
+@
+;i;"	listo;	;"k;
+@
+;i;"k:@children[ o;%
+;@
+;@;i;o;	;"new-order;@;i;"new_order;	[ ;([[o;;"	list;@;"	list0[o;;"dir;@;"diro; 	;!;2;@;i;"asco;
+;@
+;T;@;i;""// Sass list trimming support;[ ;	[ ;0o;#;"trim-list;T;@
+;@;i;	[o;
+;@
+;T;@;i;"u// built-in list trimming in Sass would make this go away.
+// declare some empty lists to put our trimmed values;[ ;	[ ;0o;;"trimmed;@
+;@;i ;0;o;*	;@;i ;[ ;+;,;	[ o;
+;@
+;T;@;i!;"// if sorting ascending;[ ;	[ ;0u;$G[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"dir:@options{ :
+@linei":@underscored_name"dir;	@	;
+i":@operator:eq:@operand2o:Sass::Script::String	:
+@type:string;	@	;
+i":@value"asc0[o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT;	@	;
+i#;"(// loop through all values in $list:@lines[ :@children[ :
+@loud0o:Sass::Tree::ForNode:@exclusiveF:@too:Sass::Script::Funcall
+;"length:@keywords{ ;	@	;
+i$:
+@args[o;	;"	list;	@	;
+i$;"	list:@has_childrenT;@;	@	;
+i$:
+@fromo:Sass::Script::Number:@original"1:@denominator_units[ :@numerator_units[ ;	@	;
+i$;i:	@var"i;[u:Sass::Tree::IfNodeb[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Funcall
+:
+@name"nth:@keywords{ :@options{ :
+@linei%:
+@args[o:Sass::Script::Variable	;"	list;
+@
+;i%:@underscored_name"	listo;	;"i;
+@
+;i%;"i;
+@
+;i%:@operator:gte:@operand2o;	;"
+start;
+@
+;i%;"
+start0[o:Sass::Tree::VariableNode;"trimmed:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;
+@
+;i&:@guarded0:
+@expro;
+;"append;	{ ;
+@
+;i&;[o;	;"trimmed;
+@
+;i&;"trimmedo;
+;"nth;	{ ;
+@
+;i&;[o;	;"	list;
+@
+;i&;"	listo;	;"i;
+@
+;i&;"i:@children[ u;$G[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Variable	:
+@name"dir:@options{ :
+@linei':@underscored_name"dir;	@	;
+i':@operator:eq:@operand2o:Sass::Script::String	:
+@type:string;	@	;
+i':@value"dec0[o:Sass::Tree::CommentNode:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass:@silentT;	@	;
+i(;"(// loop through all values in $list:@lines[ :@children[ :
+@loud0o:Sass::Tree::ForNode:@exclusiveF:@too:Sass::Script::Funcall
+;"length:@keywords{ ;	@	;
+i):
+@args[o;	;"	list;	@	;
+i);"	list:@has_childrenT;@;	@	;
+i):
+@fromo:Sass::Script::Number:@original"1:@denominator_units[ :@numerator_units[ ;	@	;
+i);i:	@var"i;[u:Sass::Tree::IfNodeb[o:Sass::Script::Operation
+:@operand1o:Sass::Script::Funcall
+:
+@name"nth:@keywords{ :@options{ :
+@linei*:
+@args[o:Sass::Script::Variable	;"	list;
+@
+;i*:@underscored_name"	listo;	;"i;
+@
+;i*;"i;
+@
+;i*:@operator:lte:@operand2o;	;"
+start;
+@
+;i*;"
+start0[o:Sass::Tree::VariableNode;"trimmed:@filename"R/Users/mason/www/woodcock/serve/stylesheets/common/mixins/_modular-scale.sass;
+@
+;i+:@guarded0:
+@expro;
+;"append;	{ ;
+@
+;i+;[o;	;"trimmed;
+@
+;i+;"trimmedo;
+;"nth;	{ ;
+@
+;i+;[o;	;"	list;
+@
+;i+;"	listo;	;"i;
+@
+;i+;"i:@children[ o;%
+;@
+;@;i,;o;	;"trimmed;@;i,;"trimmed;	[ ;([[o;;"	list;@;"	list0[o;;"
+start;@;"
+start0[o;;"dir;@;"diro; 	;!;2;@;i;"asc

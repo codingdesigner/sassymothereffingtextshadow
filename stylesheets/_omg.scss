@@ -1,0 +1,27 @@
+@import "compass";
+@import "common/variables/color_names";
+@import "style/variables/colors";
+/*@import "style/variables/fonts";*/
+
+@function omg() {
+  $output: '';
+  $end: 25;
+  $radius: 50;
+  @for $i from 1 through $end {
+    $color: rgba($red, ($i / $end));
+    $position: 360 / $end * $i;
+    $cos: cos($position * (pi() / 180));
+    $x-position: $radius * $cos;
+    $sin: sin($position * (pi() / 180));
+    $y-position: $radius * $sin;
+     $output: $output + '#{$color} #{$x-position}px #{$y-position}px 2px';
+     @if $i < $end {
+       $output: $output + ', ';
+     }
+  }
+  @return unquote($output);
+}
+
+.ex2 h3 {
+  @include text-shadow(omg());
+}

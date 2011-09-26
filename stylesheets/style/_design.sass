@@ -1,0 +1,192 @@
+// Create the design for your site below
+/* SITE-WIDE DESIGN --------------------------------------------------------------
+
+// $font-google-marker: 'Permanent Marker', cursive
+// $font-google-fell: 'IM Fell English SC', serif
+// $font-google-monoton: 'Monoton', cursive
+// $font-google-lobster: 'Lobster', cursive
+// $font-google-slackey: 'Slackey', cursive
+// $font-google-sniglet: 'Sniglet', cursive
+// $font-google-stencil: 'Stardos Stencil', cursive
+// $font-google-holtwood: 'Holtwood One SC', serif
+
+.center-text
+  text-align: center
+
+  
+header, #main, footer
+  padding: 0 $kit-side-gutter-width  
+  
+header
+  background: $white
+  +padding-leader
+  +padding-trailer  
+  +box-shadow(rgba($darkgray, 0.5) 0 2px 4px)  
+  position: relative
+  .lorenz
+    @extend .center-text
+    color: rgba($white, 0)
+    position: relative
+    top: 1.5em
+    font-size: 20px
+  h1
+    position: relative
+    z-index: 1
+  nav
+    max-width: ms(17)
+    margin: 0 auto
+    display: table
+    +adjust-font-size-to(ms(2))
+    font-family: $font-google-fell
+    position: relative
+    z-index: 1
+    ul
+      +horizontal-list(1em)
+    a
+      +remove-link-underlines
+      background: $white
+  
+#main
+  max-width: ms(17)
+  margin: 0 auto
+
+
+body
+  // background: $yellow
+  
+
+.warning
+  $trans: rgba($black, 0)
+  font-family: $font-google-holtwood
+  +text-shadow($red 2px 2px 0px)
+  -webkit-text-fill-color: $background-color
+  -webkit-text-stroke-color: $red
+  -webkit-text-stroke-width: 1px
+  $trans: rgba($black, 0)
+  &:hover
+    background-image: -webkit-repeating-linear-gradient(-33deg, $trans, $trans 35px, $red 35px, $red 70px)
+    background-image: -moz-repeating-linear-gradient(-33deg, $trans, $trans 35px, $red 35px, $red 70px)
+    background-image: repeating-linear-gradient(-33deg, $trans, $trans 35px, $red 35px, $red 70px)
+
+
+.disclaimer, .nyah
+  display: block
+  @extend .center-text
+  
+.disclaimer
+  color: $gray
+      
+.nyah
+  @extend .h4
+  font-style: italic
+  text-transform: lowercase
+  color: $gred
+
+
+h1, h2, h3
+  @extend .center-text
+  
+header
+  overflow: hidden
+  h1
+    font-style: italic
+    // font-family: $font-google-stencil
+    
+.ex
+  border-bottom: 1px dashed rgba($red, 0.5)
+  +leader(2)
+  +padding-trailer(2)
+  +trailer(4)
+  h3
+    letter-spacing: 0.125em
+
+    
+.ex1 
+  border-top: 1px dashed rgba($red, 0.5)
+  h3
+    @extend .h1
+
+.ex2 h3
+  font-family: $font-google-monoton
+  +adjust-font-size-to(ms(5))
+  letter-spacing: 2em
+  +trailer
+    
+.ex3 h3
+  font-family: $font-mono
+  letter-spacing: 2em
+  +trailer
+  
+.ex4 h3
+  font-family: $font-google-holtwood
+  letter-spacing: 1em
+  +leader(2)
+  +trailer(2)
+
+.ex5 h3
+  font-family: $font-cooper
+  letter-spacing: -1px
+  line-height: 4em
+  // -webkit-text-fill-color: $background-color
+  -webkit-text-stroke-color: rgba($white, 0.5)
+  -webkit-text-stroke-width: 1px
+  +trailer(2)
+  
+.ex6 h3
+  +leader(5)
+  +trailer(3)
+    
+footer
+  background: $notblack
+  color: $white
+  background-image: image_url('dirt-500x500.jpg')
+  // background-size: cover
+  // -moz-background-size: cover
+  @extend .center-text
+  +padding-leader
+  +padding-trailer
+  .tcd
+    +trailer
+    small
+      +trailer
+    a
+      +replace-text-with-dimensions('tcd-logo.png')
+      display: block
+      +remove-link-underlines
+      margin: 0 auto
+  nav
+    ul
+      margin-bottom: 0
+    .twitter
+      +adjust-font-size-to(ms(2))
+      position: relative
+      label
+        +replace-text-with-dimensions('twitter-logo.png')
+        display: inline-block
+        +trailer
+      a
+        position: relative
+        top: 4px
+        left: 23px
+        background: $white
+        +link-colors($alt-color, $notblack, $black, $alt-color, false)
+        padding: 0.25em 0.5em
+        height: 18px
+        +border-right-radius
+        &:before
+          content: ""
+          position: absolute
+          left: -18px
+          top: 0px
+          border-right: 18px solid $white
+          border-top: 18px solid rgba($black, 0)
+          border-bottom: 18px solid rgba($black, 0)
+    .hattip
+      +adjust-font-size-to(ms(1))
+  a
+    +link-colors($white, $notblack, $black, $white, false)
+    +better-links($white, $notblack, $black, $white, false)
+    
+    
+    
+  

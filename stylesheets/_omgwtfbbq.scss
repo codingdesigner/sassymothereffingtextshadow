@@ -1,0 +1,28 @@
+@import "compass";
+@import "common/variables/color_names";
+@import "style/variables/colors";
+/*@import "style/variables/fonts";*/
+
+@function omgwtfbbq() {
+  $output: '';
+  $end: 100;
+  $radius: 80;
+  @for $i from 1 through $end {
+    $color: rgba($red, ($i / $end));
+    $color: adjust-hue($color, $i / 1.618);
+    $position: 90 / $end * $i;
+    $cos: cos($position * (pi() / 60));
+    $x-position: $radius * $cos;
+    $sin: sin($position * (pi() / -45));
+    $y-position: $radius * $sin;
+    $output: $output + '#{$color} #{$x-position}px #{$y-position}px 2px';
+     @if $i < $end {
+       $output: $output + ', ';
+     }
+  }
+  @return unquote($output);
+}
+
+.ex4 h3 {
+  @include text-shadow(omgwtfbbq());
+}
