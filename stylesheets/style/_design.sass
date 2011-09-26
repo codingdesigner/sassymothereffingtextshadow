@@ -173,6 +173,7 @@ footer
         padding: 0.25em 0.5em
         height: 18px
         +border-right-radius
+        +remove-link-underlines
         &:before
           content: ""
           position: absolute
@@ -180,12 +181,12 @@ footer
           top: 0px
           border-right: 18px solid $white
           border-top: 18px solid rgba($black, 0)
-          border-bottom: 18px solid rgba($black, 0)
+          border-bottom: 17px solid rgba($black, 0)
     .hattip
       +adjust-font-size-to(ms(1))
   a
-    +link-colors($white, $notblack, $black, $white, false)
-    +better-links($white, $notblack, $black, $white, false)
+    +link-colors($white, $red, $red, $white, false)
+    +better-links($white, $red, $red, $white, false)
     
     
     

@@ -804,7 +804,7 @@ header h1 {
 footer {
   background: #191919;
   color: white;
-  background-image: url('../images/dirt-500x500.jpg?1311219001');
+  background-image: url('../images/dirt-500x500.jpg?1317045881');
   padding-top: 1.714em;
   padding-bottom: 1.714em;
 }
@@ -818,7 +818,7 @@ footer .tcd a {
   text-indent: -119988px;
   overflow: hidden;
   text-align: left;
-  background-image: url('../images/tcd-logo.png?1317006256');
+  background-image: url('../images/tcd-logo.png?1317045881');
   background-repeat: no-repeat;
   background-position: 50% 50%;
   width: 319px;
@@ -844,7 +844,7 @@ footer nav .twitter label {
   text-indent: -119988px;
   overflow: hidden;
   text-align: left;
-  background-image: url('../images/twitter-logo.png?1316989227');
+  background-image: url('../images/twitter-logo.png?1317045881');
   background-repeat: no-repeat;
   background-position: 50% 50%;
   width: 95px;
@@ -882,6 +882,12 @@ footer nav .twitter a:hover {
 footer nav .twitter a:active {
   color: black;
 }
+footer nav .twitter a {
+  border-bottom: none;
+}
+footer nav .twitter a:hover {
+  border-bottom: none;
+}
 footer nav .twitter a:before {
   content: "";
   position: absolute;
@@ -889,7 +895,7 @@ footer nav .twitter a:before {
   top: 0px;
   border-right: 18px solid white;
   border-top: 18px solid rgba(0, 0, 0, 0);
-  border-bottom: 18px solid rgba(0, 0, 0, 0);
+  border-bottom: 17px solid rgba(0, 0, 0, 0);
 }
 footer nav .hattip {
   font-size: 1.25em;
@@ -902,10 +908,10 @@ footer a:visited {
   color: white;
 }
 footer a:hover {
-  color: #191919;
+  color: #b80000;
 }
 footer a:active {
-  color: black;
+  color: #b80000;
 }
 footer a {
   text-decoration: none;
@@ -915,8 +921,8 @@ footer a:visited {
   border-bottom-color: white;
 }
 footer a:hover {
-  border-bottom-color: #191919;
+  border-bottom-color: #b80000;
 }
 footer a:active {
-  border-bottom-color: black;
+  border-bottom-color: #b80000;
 }
