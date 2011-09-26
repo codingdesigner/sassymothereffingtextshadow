@@ -26,7 +26,7 @@
           $color: rgba($red, 0.5);
           $end: 25;
           @for $i from 1 through $end {
-             $output: $output + '#{$color} #{$i}px #{$i}px 2px';
+             $output: $output + '\#{$color} \#{$i}px \#{$i}px 2px';
              @if $i < $end {
                $output: $output + ', ';
              }
@@ -129,7 +129,7 @@
       Now it's your turn. You know Sass (or would like to) and you want to terrible, dirty things with it. This [Compass Extension](https://rubygems.org/gems/sassy-text-shadow) is for you. 
     %pre.brush:.sass
       :preserve
-        @function mothereffingtextshadow($color, $iterations, $rad, $deg, $cos-i, $sin-i, $color-multiplier) {
+        @function sassy-text-shadow($color, $iterations, $rad, $deg, $cos-i, $sin-i, $color-multiplier) {
           $output: '';
           $end: $iterations;
           $radius: $rad;
@@ -151,7 +151,7 @@
         }
 
         .ex5 h3 {
-          @include text-shadow(mothereffingtextshadow($red, 100, 80, 120, 90, -45, 0.09));
+          @include text-shadow(sassy-text-shadow($red, 100, 80, 120, 90, -45, 0.09));
         }
   %div.ex.ex6#lmao
     %h3{:contenteditable => ""} 
@@ -201,7 +201,7 @@
         .ex6 h3 {
           @include text-shadow(lmao($red, 5000, 6, 4, 6));
         }
-%footer#credits
+%footer#blame
   .tcd
     %small
       Brought to you by
