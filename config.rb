@@ -2,7 +2,8 @@
 # Compass Configuration
 #
 
-require 'susy'
+# require 'susy'
+require 'zocial'
 
 # HTTP paths
 http_path             = '/'
