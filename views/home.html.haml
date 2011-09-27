@@ -184,7 +184,7 @@
             $color: rgba($orig-color, ($i / $end));
             $color: adjust-hue($color, $z1);
 
-            $output: $output + '#{$color} #{$xval}px #{$yval}px #{$spread}px';
+            $output: $output + '\#{$color} \#{$xval}px \#{$yval}px \#{$spread}px';
              @if $i < $end {
                $output: $output + ', ';
              }
@@ -213,14 +213,17 @@
   %nav.social
     %ul
       %li.twitter
-        %label
-          Twitter:
-        %a{:href => "http://twitter.com/canarymason"} @canarymason
+        %a(href="http://twitter.com/canarymason" class="zocial twitter icon")
+          %span
+            Twitter:
+        %a{:href => "http://twitter.com/canarymason", :class => "username"} @canarymason
       %li.github
-        %a{:href => "https://github.com/canarymason/sassytextshadow"} Fork on Github
+        %a(href="https://github.com/canarymason/sassytextshadow" class="zocial github")
+          %span Fork on Github
       %li.gem
-        %a{:href => "https://rubygems.org/gems/sassy-text-shadow"} Install the gem
+        %a(href="https://rubygems.org/gems/sassy-text-shadow" class="zocial white")
+          %span Install the gem
       %li.hattip
         %label
           Hat Tip:
-        %a{:href => "http://mothereffingtextshadow.com/"} The Paul Irish Original
+        %a{:href => "http://mothereffingtextshadow.com/"} Paul Irish's Original Mother Effing Text Shadow
