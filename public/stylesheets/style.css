@@ -12,6 +12,20 @@
  * Download the source files here: 
  * https://github.com/canarymason/The-Coding-Designers-Survival-Kit
  * Learn more about Sass & Compass at http://compass-style.org/ */
+@font-face {
+  font-family: "Zocial-Lite";
+  src: url('fonts/zocial/zocial-lite-regular-webfont.eot');
+  src: url('fonts/zocial/zocial-lite-regular-webfont.eot?iefix') format('eot'), url('fonts/zocial/zocial-lite-regular-webfont.woff') format('woff'), url('fonts/zocial/zocial-lite-regular-webfont.ttf') format('truetype'), url('fonts/zocial/zocial-lite-regular-webfont.svg') format('svg');
+}
+
+.ff-zocial-lite, .zocial > span:before {
+  font-family: "Zocial-Lite", sans-serif;
+}
+
+.ff-helvetica, .ff-arial, .zocial {
+  font-family: Clean, "Helvetica-Neue", Helvetica, Arial, sans-serif;
+}
+
 /* Links -------------------------------------------------------------- */
 /* create simple tabs from <a> unside <ul>
  * $dir is 'bottom' for standard tabs
@@ -801,10 +815,226 @@ header h1 {
   margin-bottom: 5.143em;
 }
 
+.zocial, .zocial > span {
+  -moz-border-radius: 0.2em;
+  -webkit-border-radius: 0.2em;
+  -o-border-radius: 0.2em;
+  -ms-border-radius: 0.2em;
+  -khtml-border-radius: 0.2em;
+  border-radius: 0.2em;
+  position: relative;
+}
+
+.zocial {
+  -moz-box-shadow: inset 0 0.063em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.063em rgba(255, 255, 255, 0.6), 0 0.063em 0 rgba(255, 255, 255, 0.3);
+  -webkit-box-shadow: inset 0 0.063em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.063em rgba(255, 255, 255, 0.6), 0 0.063em 0 rgba(255, 255, 255, 0.3);
+  -o-box-shadow: inset 0 0.063em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.063em rgba(255, 255, 255, 0.6), 0 0.063em 0 rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 0.063em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.063em rgba(255, 255, 255, 0.6), 0 0.063em 0 rgba(255, 255, 255, 0.3);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-bottom-color: rgba(0, 0, 0, 0.4);
+  color: white !important;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1.8em;
+  outline: none;
+  padding: 0;
+  text-decoration: none !important;
+}
+.zocial button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+.zocial.icon {
+  width: 1.85em;
+  overflow: hidden;
+}
+.zocial > span {
+  position: relative;
+  display: inline-block;
+  font-size: 80%;
+  font-weight: bold;
+  line-height: 2em;
+  padding-right: 0.825em;
+  white-space: nowrap;
+}
+.zocial > span:before {
+  -moz-box-shadow: 0.075em 0 0 rgba(255, 255, 255, 0.25);
+  -webkit-box-shadow: 0.075em 0 0 rgba(255, 255, 255, 0.25);
+  -o-box-shadow: 0.075em 0 0 rgba(255, 255, 255, 0.25);
+  box-shadow: 0.075em 0 0 rgba(255, 255, 255, 0.25);
+  border-right: 0.075em solid rgba(0, 0, 0, 0.1);
+  display: block;
+  float: left;
+  font-size: 125%;
+  font-style: normal;
+  font-weight: normal;
+  margin: 0.068em 0.5em 0 0;
+  text-align: center;
+  width: 1.75em;
+}
+.zocial > span {
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255, 255, 255, 0.1)), color-stop(49%, rgba(255, 255, 255, 0.05)), color-stop(51%, rgba(0, 0, 0, 0.05)), color-stop(100%, rgba(0, 0, 0, 0.1)));
+  background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05) 49%, rgba(0, 0, 0, 0.05) 51%, rgba(0, 0, 0, 0.1));
+  background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05) 49%, rgba(0, 0, 0, 0.05) 51%, rgba(0, 0, 0, 0.1));
+  background: -o-linear-gradient(top, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05) 49%, rgba(0, 0, 0, 0.05) 51%, rgba(0, 0, 0, 0.1));
+  background: -ms-linear-gradient(top, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05) 49%, rgba(0, 0, 0, 0.05) 51%, rgba(0, 0, 0, 0.1));
+  background: linear-gradient(top, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05) 49%, rgba(0, 0, 0, 0.05) 51%, rgba(0, 0, 0, 0.1));
+}
+.zocial:hover > span, .zocial:focus > span {
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255, 255, 255, 0.15)), color-stop(49%, rgba(255, 255, 255, 0.15)), color-stop(51%, rgba(0, 0, 0, 0.1)), color-stop(100%, rgba(0, 0, 0, 0.15)));
+  background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15) 49%, rgba(0, 0, 0, 0.1) 51%, rgba(0, 0, 0, 0.15));
+  background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15) 49%, rgba(0, 0, 0, 0.1) 51%, rgba(0, 0, 0, 0.15));
+  background: -o-linear-gradient(top, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15) 49%, rgba(0, 0, 0, 0.1) 51%, rgba(0, 0, 0, 0.15));
+  background: -ms-linear-gradient(top, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15) 49%, rgba(0, 0, 0, 0.1) 51%, rgba(0, 0, 0, 0.15));
+  background: linear-gradient(top, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15) 49%, rgba(0, 0, 0, 0.1) 51%, rgba(0, 0, 0, 0.15));
+}
+.zocial:active > span {
+  background: -webkit-gradient(linear, 50% 100%, 50% 0%, color-stop(0%, rgba(255, 255, 255, 0.1)), color-stop(30%, rgba(255, 255, 255, 0)), color-stop(50%, rgba(0, 0, 0, 0)), color-stop(100%, rgba(0, 0, 0, 0.1)));
+  background: -webkit-linear-gradient(bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.1));
+  background: -moz-linear-gradient(bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.1));
+  background: -o-linear-gradient(bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.1));
+  background: -ms-linear-gradient(bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.1));
+  background: linear-gradient(bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.1));
+}
+.zocial.white, .zocial.twitter, .zocial.github {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  -moz-box-shadow: inset 0 0.063em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.063em rgba(255, 255, 255, 0.6), 0 0.063em 0 rgba(255, 255, 255, 0.3);
+  -webkit-box-shadow: inset 0 0.063em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.063em rgba(255, 255, 255, 0.6), 0 0.063em 0 rgba(255, 255, 255, 0.3);
+  -o-box-shadow: inset 0 0.063em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.063em rgba(255, 255, 255, 0.6), 0 0.063em 0 rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 0.063em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.063em rgba(255, 255, 255, 0.6), 0 0.063em 0 rgba(255, 255, 255, 0.3);
+}
+.zocial.github:hover > span, .zocial.twitter:focus > span, .zocial.github:focus > span {
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, rgba(255, 255, 255, 0.5)), color-stop(49%, rgba(255, 255, 255, 0.2)), color-stop(51%, rgba(0, 0, 0, 0.05)), color-stop(100%, rgba(0, 0, 0, 0.15)));
+  background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2) 49%, rgba(0, 0, 0, 0.05) 51%, rgba(0, 0, 0, 0.15));
+  background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2) 49%, rgba(0, 0, 0, 0.05) 51%, rgba(0, 0, 0, 0.15));
+  background: -o-linear-gradient(top, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2) 49%, rgba(0, 0, 0, 0.05) 51%, rgba(0, 0, 0, 0.15));
+  background: -ms-linear-gradient(top, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2) 49%, rgba(0, 0, 0, 0.05) 51%, rgba(0, 0, 0, 0.15));
+  background: linear-gradient(top, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2) 49%, rgba(0, 0, 0, 0.05) 51%, rgba(0, 0, 0, 0.15));
+}
+.zocial.twitter:active > span, .zocial.github:active > span {
+  background: -webkit-gradient(linear, 50% 100%, 50% 0%, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(30%, rgba(255, 255, 255, 0)), color-stop(50%, rgba(0, 0, 0, 0)), color-stop(100%, rgba(0, 0, 0, 0.1)));
+  background: -webkit-linear-gradient(bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.1));
+  background: -moz-linear-gradient(bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.1));
+  background: -o-linear-gradient(bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.1));
+  background: -ms-linear-gradient(bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.1));
+  background: linear-gradient(bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 30%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.1));
+}
+.zocial > span:before {
+  content: "-";
+}
+.zocial.white {
+  background: white;
+  color: black !important;
+}
+.zocial.white > span:before {
+  content: "-";
+  color: black;
+}
+.zocial.black {
+  background: black;
+  color: white !important;
+}
+.zocial.black > span:before {
+  content: "-";
+  color: white;
+}
+.zocial.red {
+  background: red;
+  color: white !important;
+}
+.zocial.red > span:before {
+  content: "-";
+  color: white;
+}
+.zocial.green {
+  background: green;
+  color: white !important;
+}
+.zocial.green > span:before {
+  content: "-";
+  color: white;
+}
+.zocial.blue {
+  background: blue;
+  color: white !important;
+}
+.zocial.blue > span:before {
+  content: "-";
+  color: white;
+}
+.zocial.facebook > span:before {
+  content: "f";
+}
+.zocial.github > span:before {
+  content: "g";
+}
+.zocial.googleplus > span:before {
+  content: "+";
+}
+.zocial.rss > span:before {
+  content: "R";
+}
+.zocial.smashingmag > span:before {
+  content: "*";
+}
+.zocial.twitter > span:before {
+  content: "T";
+}
+.zocial.github {
+  color: #050505 !important;
+  background: #fbfbfb;
+}
+.zocial.googleplus {
+  background: #282626;
+}
+.zocial.googleplus:before {
+  content: "";
+  display: block;
+  height: 0.2em;
+  margin-bottom: -0.1em;
+  width: 100%;
+  position: relative;
+  left: 0em;
+  top: 0;
+  background: -webkit-gradient(linear, 0% 50%, 100% 50%, color-stop(0%, #d20e1b), color-stop(25%, #d20e1b), color-stop(25%, #3156e6), color-stop(50%, #3156e6), color-stop(50%, #2aa134), color-stop(75%, #2aa134), color-stop(75%, #ecb01b), color-stop(100%, #ecb01b));
+  background: -webkit-linear-gradient(left, #d20e1b, #d20e1b 25%, #3156e6 25%, #3156e6 50%, #2aa134 50%, #2aa134 75%, #ecb01b 75%, #ecb01b);
+  background: -moz-linear-gradient(left, #d20e1b, #d20e1b 25%, #3156e6 25%, #3156e6 50%, #2aa134 50%, #2aa134 75%, #ecb01b 75%, #ecb01b);
+  background: -o-linear-gradient(left, #d20e1b, #d20e1b 25%, #3156e6 25%, #3156e6 50%, #2aa134 50%, #2aa134 75%, #ecb01b 75%, #ecb01b);
+  background: -ms-linear-gradient(left, #d20e1b, #d20e1b 25%, #3156e6 25%, #3156e6 50%, #2aa134 50%, #2aa134 75%, #ecb01b 75%, #ecb01b);
+  background: linear-gradient(left, #d20e1b, #d20e1b 25%, #3156e6 25%, #3156e6 50%, #2aa134 50%, #2aa134 75%, #ecb01b 75%, #ecb01b);
+  -moz-border-radius: 0.2em 0.2em 0 0;
+  -webkit-border-radius: 0.2em 0.2em 0 0;
+  -o-border-radius: 0.2em 0.2em 0 0;
+  -ms-border-radius: 0.2em 0.2em 0 0;
+  -khtml-border-radius: 0.2em 0.2em 0 0;
+  border-radius: 0.2em 0.2em 0 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.8);
+  -moz-box-shadow: inset 0 0.063em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.063em rgba(255, 255, 255, 0.6), 0 0.063em 0 rgba(255, 255, 255, 0.3);
+  -webkit-box-shadow: inset 0 0.063em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.063em rgba(255, 255, 255, 0.6), 0 0.063em 0 rgba(255, 255, 255, 0.3);
+  -o-box-shadow: inset 0 0.063em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.063em rgba(255, 255, 255, 0.6), 0 0.063em 0 rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 0.063em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.063em rgba(255, 255, 255, 0.6), 0 0.063em 0 rgba(255, 255, 255, 0.3);
+  z-index: 0;
+}
+.zocial.facebook {
+  background: #4863ae;
+}
+.zocial.rss {
+  background: #ff7f25;
+}
+.zocial.smashingmag {
+  background: #ff4f27;
+}
+.zocial.twitter {
+  background: #e9f9ff;
+  color: #3c6b9c !important;
+}
+
 footer {
   background: #191919;
   color: white;
-  background-image: url('../images/dirt-500x500.jpg?1317045881');
+  background-image: url('../images/dirt-500x500.jpg?1311219001');
   padding-top: 1.714em;
   padding-bottom: 1.714em;
 }
@@ -818,7 +1048,7 @@ footer .tcd a {
   text-indent: -119988px;
   overflow: hidden;
   text-align: left;
-  background-image: url('../images/tcd-logo.png?1317045881');
+  background-image: url('../images/tcd-logo.png?1317006256');
   background-repeat: no-repeat;
   background-position: 50% 50%;
   width: 319px;
@@ -835,26 +1065,37 @@ footer .tcd a:hover {
 footer nav ul {
   margin-bottom: 0;
 }
+footer nav li {
+  margin-bottom: 2em;
+}
 footer nav .twitter {
   font-size: 1.563em;
   line-height: 2.194em;
   position: relative;
 }
-footer nav .twitter label {
-  text-indent: -119988px;
-  overflow: hidden;
-  text-align: left;
-  background-image: url('../images/twitter-logo.png?1317045881');
-  background-repeat: no-repeat;
-  background-position: 50% 50%;
-  width: 95px;
-  height: 68px;
+footer nav .twitter a.zocial.twitter {
+  background: none;
+  color: white;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  -o-box-shadow: none;
+  box-shadow: none;
+  text-shadow: gray 0 1px 0;
+  color: white !important;
+  border: none;
+  font-size: 80px;
+  width: 130px;
   display: inline-block;
-  margin-bottom: 1.714em;
+  line-height: 1em;
+  height: 100px;
+  padding: 0;
 }
-footer nav .twitter a {
+footer nav .twitter a.zocial.twitter span {
+  background-image: none;
+}
+footer nav .twitter a.username {
   position: relative;
-  top: 4px;
+  top: -23px;
   left: 23px;
   background: white;
   color: #b80000;
@@ -873,22 +1114,22 @@ footer nav .twitter a {
   -khtml-border-bottom-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
-footer nav .twitter a:visited {
+footer nav .twitter a.username:visited {
   color: #b80000;
 }
-footer nav .twitter a:hover {
+footer nav .twitter a.username:hover {
   color: #191919;
 }
-footer nav .twitter a:active {
+footer nav .twitter a.username:active {
   color: black;
 }
-footer nav .twitter a {
+footer nav .twitter a.username {
   border-bottom: none;
 }
-footer nav .twitter a:hover {
+footer nav .twitter a.username:hover {
   border-bottom: none;
 }
-footer nav .twitter a:before {
+footer nav .twitter a.username:before {
   content: "";
   position: absolute;
   left: -18px;
@@ -898,8 +1139,8 @@ footer nav .twitter a:before {
   border-bottom: 17px solid rgba(0, 0, 0, 0);
 }
 footer nav .hattip {
-  font-size: 1.25em;
-  line-height: 1.371em;
+  font-size: 1.563em;
+  line-height: 2.194em;
 }
 footer a {
   color: white;
