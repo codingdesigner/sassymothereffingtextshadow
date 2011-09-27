@@ -135,6 +135,8 @@ header
 .ex6 h3
   +leader(5)
   +trailer(3)
+
++zocial
     
 footer
   background: $notblack
@@ -157,16 +159,34 @@ footer
   nav
     ul
       margin-bottom: 0
+    li
+      margin-bottom: 2em
     .twitter
       +adjust-font-size-to(ms(2))
       position: relative
-      label
-        +replace-text-with-dimensions('twitter-logo.png')
+      // label
+      //   +replace-text-with-dimensions('twitter-logo.png')
+      //   display: inline-block
+      //   +trailer
+      // zocialize
+      a.zocial.twitter
+        background: none
+        color: $white
+        +box-shadow(none)
+        +text-shadow($gray 0 1px 0)
+        color: $white !important
+        border: none
+        font-size: 80px
+        width: 130px
         display: inline-block
-        +trailer
-      a
+        line-height: 1em
+        height: 100px
+        padding: 0
+        span
+          +background-image(none)
+      a.username
         position: relative
-        top: 4px
+        top: -23px
         left: 23px
         background: $white
         +link-colors($alt-color, $notblack, $black, $alt-color, false)
@@ -183,7 +203,7 @@ footer
           border-top: 18px solid rgba($black, 0)
           border-bottom: 17px solid rgba($black, 0)
     .hattip
-      +adjust-font-size-to(ms(1))
+      +adjust-font-size-to(ms(2))
   a
     +link-colors($white, $red, $red, $white, false)
     +better-links($white, $red, $red, $white, false)
